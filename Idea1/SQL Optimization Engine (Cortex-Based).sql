@@ -1,4 +1,4 @@
-#Step 1: Extract Expensive Queries
+--Step 1: Extract Expensive Queries
 
 CREATE OR REPLACE TABLE TOP_EXPENSIVE_QUERIES AS
 SELECT 
@@ -14,7 +14,7 @@ AND BYTES_SCANNED > 1e9
 ORDER BY BYTES_SCANNED DESC
 LIMIT 100;
 
-#Step 2: Cortex Prompt for Optimization
+--Step 2: Cortex Prompt for Optimization
 
 CREATE OR REPLACE TABLE QUERY_OPTIMIZATION_RESULTS AS
 SELECT 
@@ -35,7 +35,7 @@ Query:
 ) AS OPTIMIZED_QUERY
 FROM TOP_EXPENSIVE_QUERIES;
 
-#Step 3: Add Explanation Layer
+--Step 3: Add Explanation Layer
 
 ALTER TABLE QUERY_OPTIMIZATION_RESULTS ADD COLUMN EXPLANATION STRING;
 
@@ -48,3 +48,27 @@ Original: ', QUERY_TEXT,
 ' Optimized: ', OPTIMIZED_QUERY
 )
 );
+
+--Automation Layer (Critical)
+--Use Snowflake Tasks
+CREATE TASK DAILY_OPTIMIZATION_TASK
+WAREHOUSE = COMPUTE_WH
+SCHEDULE = 'USING CRON 0 2 * * * UTC'
+AS
+CALL RUN_GENAI_OPTIMIZATION();
+
+--Optional: Stored Procedure Wrapper
+--Bundle logic:
+
+CREATE OR REPLACE PROCEDURE RUN_GENAI_OPTIMIZATION()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$
+BEGIN
+-- Refresh top queries
+-- Run Cortex optimization
+-- Store results
+RETURN 'Done';
+END;
+
