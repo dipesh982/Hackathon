@@ -1,5 +1,4 @@
 # Cost Attribution Copilot — Cortex AI-powered warehouse cost anomaly dashboard
-# Co-authored with CoCo
 import os
 import pandas as pd
 import streamlit as st
