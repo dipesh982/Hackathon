@@ -45,3 +45,26 @@ FROM COST_SPIKES;
 --Join:
 --SQL
 QUERY_HISTORY WHERE DATE = SPIKE_DATE
+
+--Automation Layer (Critical)
+--Use Snowflake Tasks
+CREATE TASK DAILY_OPTIMIZATION_TASK
+WAREHOUSE = COMPUTE_WH
+SCHEDULE = 'USING CRON 0 2 * * * UTC'
+AS
+CALL RUN_GENAI_OPTIMIZATION();
+
+--Optional: Stored Procedure Wrapper
+--Bundle logic:
+
+CREATE OR REPLACE PROCEDURE RUN_GENAI_OPTIMIZATION()
+RETURNS STRING
+LANGUAGE SQL
+AS
+$
+BEGIN
+-- Refresh top queries
+-- Run Cortex optimization
+-- Store results
+RETURN 'Done';
+END;
